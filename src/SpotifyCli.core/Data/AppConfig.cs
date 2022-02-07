@@ -19,11 +19,11 @@ namespace SpotifyClientCli.Data
            await File.WriteAllTextAsync(AppConfigFilePath, JsonConvert.SerializeObject(this), Encoding.UTF8);
         }
 
-        public Acc Account { get; } = new Acc();
+        public Acc Account { get; } = new();
 
-        public App App { get; } = new App();
+        public App App { get; } = new();
 
-        public Token Token { get; } = new Token();
-        public Device Device { get; set; } = new Device();   
+        public Token Token { get; } = new();
+        public Device Device { get; set; } = new();   
     }
 }

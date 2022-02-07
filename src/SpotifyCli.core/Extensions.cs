@@ -12,8 +12,7 @@ namespace SpotifyClientCli
 
         public static string ListToString(this List<string> list)
         {
-            string[] arr = list.ToArray();
-            string str = string.Join("\n ", arr);
+            string str = string.Join("\n ", list);
             return str;
         } 
     }

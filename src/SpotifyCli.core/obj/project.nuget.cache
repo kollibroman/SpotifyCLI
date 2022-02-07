@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "29dktQHJys8x74Jm1q7NtXFXofZsGuJ8wKYTd+sGLbMyjTtt6VwhYvgTTO4EX/yK9qgb59s5z6SBNPIXl18TZA==",
+  "dgSpecHash": "beXWtBL+blO78AzSwoZW88kjXARnbnq/YTgob+Y/hZHVPWbd1lHkMqShhYRtXZyINg/FmuWIzu9EEZBKERejMw==",
   "success": true,
-  "projectFilePath": "/home/kollibroman/losoweProjekty/SpotifyCliClient/src/SpotifyCli.core/SpotifyCli.core.csproj",
+  "projectFilePath": "/home/kollibroman/LosoweProjekty/SpotifyCLI/src/SpotifyCli.core/SpotifyCli.core.csproj",
   "expectedPackageFiles": [
     "/home/kollibroman/.nuget/packages/embedio/3.4.3/embedio.3.4.3.nupkg.sha512",
     "/home/kollibroman/.nuget/packages/mcmaster.extensions.commandlineutils/3.1.0/mcmaster.extensions.commandlineutils.3.1.0.nupkg.sha512",

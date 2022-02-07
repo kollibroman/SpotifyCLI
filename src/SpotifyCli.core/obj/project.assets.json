@@ -1739,11 +1739,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/kollibroman/losoweProjekty/SpotifyCliClient/src/SpotifyCli.core/SpotifyCli.core.csproj",
+      "projectUniqueName": "/home/kollibroman/LosoweProjekty/SpotifyCLI/src/SpotifyCli.core/SpotifyCli.core.csproj",
       "projectName": "SpotifyCli.core",
-      "projectPath": "/home/kollibroman/losoweProjekty/SpotifyCliClient/src/SpotifyCli.core/SpotifyCli.core.csproj",
+      "projectPath": "/home/kollibroman/LosoweProjekty/SpotifyCLI/src/SpotifyCli.core/SpotifyCli.core.csproj",
       "packagesPath": "/home/kollibroman/.nuget/packages/",
-      "outputPath": "/home/kollibroman/losoweProjekty/SpotifyCliClient/src/SpotifyCli.core/obj/",
+      "outputPath": "/home/kollibroman/LosoweProjekty/SpotifyCLI/src/SpotifyCli.core/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/kollibroman/.nuget/NuGet/NuGet.Config"

@@ -17,12 +17,12 @@ namespace SpotifyClientCli.Modules
         {
             _service = service;
         }
-        public async Task OnExecuteAsync(CommandLineApplication app)
+        public Task OnExecuteAsync(CommandLineApplication app)
         {
             _service.UserLoggedIn(out var spotify);
 
            app.ShowHelp();
-           await Task.CompletedTask;
+           return Task.CompletedTask;
            
         }
     }

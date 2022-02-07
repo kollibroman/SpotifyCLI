@@ -19,10 +19,10 @@ namespace SpotifyClientCli.Modules
             _logger = logger;
         }
 
-        public async Task OnExecuteAsync(CommandLineApplication app)
+        public Task OnExecuteAsync(CommandLineApplication app)
         {
             app.ShowHelp();
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         private static string GetVersion()
