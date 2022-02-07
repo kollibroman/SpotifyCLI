@@ -24,6 +24,7 @@ namespace SpotifyClientCli.Data
         public App App { get; } = new();
 
         public Token Token { get; } = new();
-        public Device Device { get; set; } = new();   
+        public Device Device { get; set; } = new();
+        public CurrentlyPlaying CurrentlyPlaying { get; set; } = new();   
     }
 }

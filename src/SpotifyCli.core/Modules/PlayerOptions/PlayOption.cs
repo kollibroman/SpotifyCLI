@@ -1,20 +1,14 @@
 namespace SpotifyClientCli.Modules.PlayerOptions
 {
-    [Command("play", Description = "plays an item based by name or url")]
+    [Command("play", Description = "adds an item to queue based by uri")]
     public class PlayOption : ISpotifyBase
     {
         private readonly ISpotifyService _service;
         private readonly IConsole _console;
         private readonly IConfiguration _config;
 
-        [Option("--track", Description = "Name of the track you want to play")]
-        public string? Track { get; set; }
-        [Option("--playlist", Description = "Paste url of playlist you want to play")]
-        public string? Playlist { get; set; }
-        [Option("--show", Description = "Name of the show u want to play")]
-        public string? Show { get; set; }
-        [Option("--episode", Description = "Name of episode you want to play")]
-        public string? Episode { get; set; }
+        [Argument(0, Description = "Uri of the item you want to add to queue")]
+        public string? SearchedItem { get; set; }
         public PlayOption(ISpotifyService service, IConsole console, IConfiguration config)
         {
             _service = service;
@@ -25,7 +19,8 @@ namespace SpotifyClientCli.Modules.PlayerOptions
         public async Task OnExecuteAsync(CommandLineApplication app)
         {
             _service.UserLoggedIn(out var spotify);
-            await Task.CompletedTask;
+            PlayerAddToQueueRequest request = new(SearchedItem!);
+            await spotify!.Player.AddToQueue(request);
         }
     }
 }

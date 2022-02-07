@@ -20,11 +20,12 @@ namespace SpotifyClientCli.Modules.SearchOptions
             if (TrackSearch is not null)
             {
                 List<string> results = new();
-                var request = new SearchRequest(SearchRequest.Types.Artist, TrackSearch);
+                SearchRequest request = new(SearchRequest.Types.Artist, TrackSearch);
                 var response = await spotify!.Search.Item(request);
                 foreach (var item in response.Artists.Items!.Take(5))
                 {
                     results.Add(item.Name);
+                    results.Add(item.Uri);
                 }
                 await _console.ColoredWriteLineAsync(results.ListToString(), ConsoleColor.DarkGreen);
             }

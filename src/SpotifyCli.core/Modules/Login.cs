@@ -57,7 +57,7 @@ namespace SpotifyClientCli.Modules
             };
             _server.ErrorReceived += OnErrorReceived!;
 
-            var request = new LoginRequest(_server.BaseUri, _appconfig.App.ClientId!, LoginRequest.ResponseType.Code)
+            LoginRequest request = new(_server.BaseUri, _appconfig.App.ClientId!, LoginRequest.ResponseType.Code)
             {
                 CodeChallenge = challenge,
                 CodeChallengeMethod = "S256",

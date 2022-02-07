@@ -1,6 +1,3 @@
-using System.Net.Mime;
-using static System.Net.Mime.MediaTypeNames;
-
 namespace SpotifyClientCli.Data
 {
     public class App

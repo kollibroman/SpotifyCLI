@@ -9,7 +9,8 @@ namespace SpotifyClientCli.Modules
         typeof(Logout),
         typeof(Account),
         typeof(Library),
-        typeof(Search)
+        typeof(Search),
+        typeof(Status)
     )]
     public class SpotifyCmd : ISpotifyBase
     {

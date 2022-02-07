@@ -2,11 +2,11 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     tags:
       - '*'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -16,10 +16,13 @@ jobs:
         include:
         - os: ubuntu-latest
           output: SpotifyCli
-        - os: windows-laest
+          patchy: /home/runner/work/SpotifyCLI/SpotifyCLI/src/SpotifyCli.core/SpotifyCli
+        - os: windows-latest
           output: SpotifyCli.exe
+          patchy: D:\a\SpotifyCLI\SpotifyCLI\src\SpotifyCli.core\SpotifyCli.exe
         - os: macos-latest
           output: SpotifyCli
+          patchy: /Users/runner/work/SpotifyCLI/SpotifyCLI/src/SpotifyCli.core/SpotifyCli
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -42,19 +45,17 @@ jobs:
         fi
         echo "BIN_VERSION: $BIN_VERSION"
         sed "s/\".*\"/\"$BIN_VERSION\"/g" src/SpotifyCli.core/Version.cs > src/SpotifyCli.core/VersionInfo.cs
-        rm Version.cs
+        rm src/SpotifyCli.core/Version.cs
       shell: bash
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
     - name: Publish & Warp
-      run: dotnet warp -o ${{ matrix.output }}
+      run: cd src/SpotifyCli.core && dotnet warp -o ${{ matrix.output }}
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: SpotifyCli-${{ matrix.os }}
-        path: ${{ matrix.output }}
+        path: ${{matrix.patchy}}
   deploy-github:
     needs: [build]
     runs-on: ubuntu-latest
@@ -65,7 +66,7 @@ jobs:
       run: |
         cp SpotifyCli-macos-latest/SpotifyCli SpotifyCli-mac-x64
         cp SpotifyCli-ubuntu-latest/SpotifyCli SpotifyCli-linux-x64
-        cp SpotifyCli-windows-latest/SpotifyCli.exe' SpotifyCli-win-x64.exe
+        cp SpotifyCli-windows-latest/SpotifyCli.exe SpotifyCli-win-x64.exe
     - name: Release To Github
       uses: softprops/action-gh-release@v1
       with:
@@ -75,12 +76,5 @@ jobs:
           SpotifyCli-mac-x64
           SpotifyCli-linux-x64
           SpotifyCli-win-x64.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Release To Github
-      uses: actions/upload-artifact@v2
-      with:
-        name: assets-for-download
-        path: downloads
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -11,7 +11,9 @@ namespace SpotifyClientCli.Modules.PlayerOptions
 
         public async Task OnExecuteAsync(CommandLineApplication app)
         {
-            await Task.CompletedTask;
+            _service.UserLoggedIn(out var spotify);
+            var player = spotify!.Player;
+            await player.SkipNext();
         }
     }
 }

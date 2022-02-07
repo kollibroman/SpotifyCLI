@@ -6,8 +6,8 @@ namespace SpotifyClientCli.Modules
         typeof(DeviceOption),
         typeof(PauseOption),
         typeof(NextOption),
-        typeof(QueueOption),
-        typeof(ResumeOption)
+        typeof(ResumeOption),
+        typeof(VolumeOption)
     )]
     public class Player : ISpotifyBase
     {
