@@ -23,44 +23,13 @@ namespace SpotifyClientCli.Modules
         {
             _server = new EmbedIOAuthServer(new Uri("http://localhost:5000/callback"), 5000);
 
-            var (verifier, challenge) = PKCEUtil.GenerateCodes(120);
             await _server.Start();
 
-            _server.AuthorizationCodeReceived += async (sender, response) =>
-            {
-                await _server!.Stop();
-
-               PKCETokenResponse tokenResponse = await _service.OAuth.RequestToken(
-                   new PKCETokenRequest(_appconfig.App.ClientId!, response.Code, _server.BaseUri, verifier)
-               );
-
-
-                _appconfig.Token.AccessToken = tokenResponse.AccessToken;
-                _appconfig.Token.RefreshToken = tokenResponse.RefreshToken;
-                _appconfig.Token.CreatedAt = tokenResponse.CreatedAt;
-                _appconfig.Token.ExpiresIn = tokenResponse.ExpiresIn;
-                _appconfig.Token.TokenType = tokenResponse.TokenType;
-                
-                var config = SpotifyClientConfig.CreateDefault(tokenResponse.AccessToken).WithHTTPLogger(new SimpleConsoleHTTPLogger());
-                var spotify = new SpotifyClient(config);
-                var me = await spotify.UserProfile.Current();
-
-                _appconfig.Account.Id = me.Id;
-                _appconfig.Account.DisplayName = me.DisplayName;
-                _appconfig.Account.Uri = me.Uri;
-
-                await _appconfig.SaveAsync();
-                
-                _logger.LogInformation($"Hello {me.DisplayName}");
-
-                signal.Release();
-            };
-            _server.ErrorReceived += OnErrorReceived!;
+            _server.AuthorizationCodeReceived += OnAuthCodeReceived;
+            _server.ErrorReceived += OnErrorReceived;
 
             LoginRequest request = new(_server.BaseUri, _appconfig.App.ClientId!, LoginRequest.ResponseType.Code)
             {
-                CodeChallenge = challenge,
-                CodeChallengeMethod = "S256",
                 Scope = new List<string> {
                     Scopes.AppRemoteControl,
                     Scopes.PlaylistModifyPrivate,
@@ -83,11 +52,35 @@ namespace SpotifyClientCli.Modules
                     Scopes.UserTopRead,
                     }
             };
-
             
             BrowserUtil.Open(request.ToUri());
 
             await signal.WaitAsync();
+        }
+
+        private async Task OnAuthCodeReceived(object sender, AuthorizationCodeResponse response)
+        {
+            await _server.Stop();
+            var config = SpotifyClientConfig.CreateDefault();
+            var TokenResponse = await new OAuthClient(config).RequestToken(
+                new AuthorizationCodeTokenRequest(
+                    _appconfig.App.ClientId!, _appconfig.App.ClientSecret!, response.Code, new Uri("http://localhost:5000/callback")
+                )
+            );
+            SpotifyClient spotify = new(TokenResponse.AccessToken);
+                _appconfig.Token.AccessToken = TokenResponse.AccessToken;
+                _appconfig.Token.RefreshToken = TokenResponse.RefreshToken;
+                _appconfig.Token.CreatedAt = TokenResponse.CreatedAt;
+                _appconfig.Token.ExpiresIn = TokenResponse.ExpiresIn;
+                _appconfig.Token.TokenType = TokenResponse.TokenType;
+
+            var me = await spotify.UserProfile.Current();
+            _appconfig.Account.DisplayName = me.DisplayName;
+            _appconfig.Account.Id = me.Id;
+            _appconfig.Account.Uri = me.Uri;
+            await _appconfig.SaveAsync();
+            _logger.LogInformation($"Hello {me.DisplayName}");
+            signal.Release();           
         }
   
         private  async Task OnErrorReceived(object sender, string error, string state)
