@@ -14,10 +14,12 @@ Inspired by: https://github.com/JohnnyCrazy/Sp0
   3. Library and its options
   4. Search and search options
   5. Playlists
-  6. Device from player (Using it is meaningless till player commands are done)
+  6. Player
+  7. Status
+  8. Config
 
 ## To do:
-  1. Player Commands
+  1. Write tests
 
 ## Contributions
 If you feel like helping me with this project, I will appreciate that. Fork, have fun and make pull requests!
@@ -25,4 +27,4 @@ If you feel like helping me with this project, I will appreciate that. Fork, hav
 ## Possible issues:
   1. You must have in the repo directory to use it => I'm working on to make it easier to use from anywhere; On linux just create an alias, on windows and Mac still don't know
   2. Other ones are not found yet, if you found one, open an Issue 
-## Working but with limited functionalities due to ongoing development
+## Working, but bugs are expected
