@@ -16,7 +16,6 @@ Inspired by: https://github.com/JohnnyCrazy/Sp0
   5. Playlists
   6. Player
   7. Status
-  8. Config
 
 ## To do:
   1. Write tests

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "beXWtBL+blO78AzSwoZW88kjXARnbnq/YTgob+Y/hZHVPWbd1lHkMqShhYRtXZyINg/FmuWIzu9EEZBKERejMw==",
+  "dgSpecHash": "G5G8v3hIKX1VioV1wFPOho624fLsMlQsXgEgqybCIq3968GfFodMFLNFmV7xUe0hEoA3yL1dbTmzVC4tZXfamw==",
   "success": true,
   "projectFilePath": "/home/kollibroman/LosoweProjekty/SpotifyCLI/src/SpotifyCli.core/SpotifyCli.core.csproj",
   "expectedPackageFiles": [
