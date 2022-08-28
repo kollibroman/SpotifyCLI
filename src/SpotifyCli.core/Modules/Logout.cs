@@ -1,26 +1,24 @@
+using SpotifyCli.Db;
+
 namespace SpotifyClientCli.Modules
 {
     [Command(Description = "Logouts the user")]
     public class Logout : ISpotifyBase
     {
-        private readonly AppConfig _appconfig;
         private readonly ILogger<Logout> _logger;
-        public Logout(ILogger<Logout> logger, AppConfig app)
+        private readonly SpotifyDbContext _db;
+        public Logout(ILogger<Logout> logger, SpotifyDbContext db)
         {
-            _appconfig = app;
             _logger = logger;
+            _db = db;
         }
 
         public async Task OnExecuteAsync(CommandLineApplication app)
         {
-            _appconfig.Token.AccessToken = null;
-            _appconfig.Token.RefreshToken = null;
-            _appconfig.Token.CreatedAt = null;
-            _appconfig.Token.ExpiresIn = null;
-            _appconfig.Token.TokenType = null;
-            await _appconfig.SaveAsync();
+            var account = _db.UsrAccount.Where(i => i.Id == 1);
+            _db.Remove(account);
             _logger.LogInformation("Successfully logged out!");
-            await Task.CompletedTask;
+            await _db.SaveChangesAsync();
         }
     }
 }

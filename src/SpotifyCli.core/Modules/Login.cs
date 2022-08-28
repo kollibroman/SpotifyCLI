@@ -1,3 +1,6 @@
+using SpotifyCli.Db;
+using SpotifyCli.Db.Entities;
+
 namespace SpotifyClientCli.Modules
 {
     [Command(Description = "starts auth process")]
@@ -5,16 +8,16 @@ namespace SpotifyClientCli.Modules
     public class Login : ISpotifyBase
     {
         private static EmbedIOAuthServer? _server;
-        private readonly AppConfig _appconfig;
+        private readonly SpotifyDbContext _db;
         private readonly ISpotifyService _service;
         private readonly SemaphoreSlim signal = new(0, 1);
         private readonly ILogger<Login> _logger;
         private readonly IConsole _console;
 
-        public Login(ILogger<Login> logger, ISpotifyService service, AppConfig appConfig, IConsole console)
+        public Login(ILogger<Login> logger, ISpotifyService service, SpotifyDbContext db, IConsole console)
         {
             _logger = logger;
-            _appconfig = appConfig;
+            _db = db;
             _service = service;
             _console = console;
         }
@@ -61,25 +64,36 @@ namespace SpotifyClientCli.Modules
         private async Task OnAuthCodeReceived(object sender, AuthorizationCodeResponse response)
         {
             await _server.Stop();
+            var app = _db.AppDetails.Where(i => i.Id == 1);
             var config = SpotifyClientConfig.CreateDefault();
             var TokenResponse = await new OAuthClient(config).RequestToken(
                 new AuthorizationCodeTokenRequest(
-                    _appconfig.App.ClientId!, _appconfig.App.ClientSecret!, response.Code, new Uri("http://localhost:5000/callback")
+                    app., ClientSecret!, response.Code, new Uri("http://localhost:5000/callback")
                 )
             );
             SpotifyClient spotify = new(TokenResponse.AccessToken);
-                _appconfig.Token.AccessToken = TokenResponse.AccessToken;
-                _appconfig.Token.RefreshToken = TokenResponse.RefreshToken;
-                _appconfig.Token.CreatedAt = TokenResponse.CreatedAt;
-                _appconfig.Token.ExpiresIn = TokenResponse.ExpiresIn;
-                _appconfig.Token.TokenType = TokenResponse.TokenType;
+
+            var Token = new Token()
+            {
+                Id = 1,
+                AccessToken = TokenResponse.AccessToken,
+                RefreshToken = TokenResponse.RefreshToken,
+                ExpiresIn = TokenResponse.ExpiresIn,
+                TokenType = TokenResponse.TokenType,
+                CreatedAt = TokenResponse.CreatedAt
+            };
+            await _db.Tokens.AddAsync(Token);
 
             var me = await spotify.UserProfile.Current();
-            _appconfig.Account.DisplayName = me.DisplayName;
-            _appconfig.Account.Id = me.Id;
-            _appconfig.Account.Uri = me.Uri;
-            await _appconfig.SaveAsync();
-            _logger.LogInformation($"Hello {me.DisplayName}");
+            var account = new UsrAccount()
+            {
+                Id = 1,
+                DisplayName = me.DisplayName,
+                Uri = me.Uri
+            };
+            await _db.UsrAccount.AddAsync(account);
+                _logger.LogInformation($"Hello {me.DisplayName}");
+            await _db.SaveChangesAsync();
             signal.Release();           
         }
   
