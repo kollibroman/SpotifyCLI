@@ -12,6 +12,7 @@ namespace SpotifyCli.Db
         public DbSet<Device> Device { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<UsrAccount> UsrAccount { get; set; }
+        public DbSet<CurrentlyPlaying> CurrentlyPlaying { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

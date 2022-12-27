@@ -12,3 +12,6 @@
 /home/kollibro_man/LosoweProjekty/SpotifyCLI/src/SpotifyCli.Db/obj/Debug/net6.0/ref/SpotifyCli.Db.dll
 /home/kollibro_man/LosoweProjekty/SpotifyCLI/src/SpotifyCli.Db/obj/Debug/net6.0/SpotifyCli.Db.pdb
 /home/kollibro_man/LosoweProjekty/SpotifyCLI/src/SpotifyCli.Db/obj/Debug/net6.0/SpotifyCli.Db.genruntimeconfig.cache
+/home/kollibro_man/LosoweProjekty/SpotifyCLI/src/SpotifyCli.Db/bin/Debug/net6.0/SpotifyAPI.Web.dll
+/home/kollibro_man/LosoweProjekty/SpotifyCLI/src/SpotifyCli.Db/bin/Debug/net6.0/SpotifyAPI.Web.xml
+/home/kollibro_man/LosoweProjekty/SpotifyCLI/src/SpotifyCli.Db/obj/Debug/net6.0/SpotifyCli.Db.csproj.CopyComplete

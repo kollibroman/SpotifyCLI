@@ -6,7 +6,7 @@ namespace SpotifyCli.Db.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? DeviceId { get; set; }
-        public string? Name { get; set; }
+        public string DeviceId { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -30,8 +30,10 @@ namespace SpotifyClientCli.Modules
 
             _server.AuthorizationCodeReceived += OnAuthCodeReceived;
             _server.ErrorReceived += OnErrorReceived;
+            
+            var OtherApp = _db.AppDetails.SingleOrDefault(i => i.Id == 1);
 
-            LoginRequest request = new(_server.BaseUri, _appconfig.App.ClientId!, LoginRequest.ResponseType.Code)
+            LoginRequest request = new(_server.BaseUri, OtherApp.ClientId!, LoginRequest.ResponseType.Code)
             {
                 Scope = new List<string> {
                     Scopes.AppRemoteControl,
@@ -64,11 +66,11 @@ namespace SpotifyClientCli.Modules
         private async Task OnAuthCodeReceived(object sender, AuthorizationCodeResponse response)
         {
             await _server.Stop();
-            var app = _db.AppDetails.Where(i => i.Id == 1);
+            var app = _db.AppDetails.SingleOrDefault(i => i.Id == 1);
             var config = SpotifyClientConfig.CreateDefault();
             var TokenResponse = await new OAuthClient(config).RequestToken(
                 new AuthorizationCodeTokenRequest(
-                    app., ClientSecret!, response.Code, new Uri("http://localhost:5000/callback")
+                    app.ClientId, app.ClientSecret, response.Code, new Uri("http://localhost:5000/callback")
                 )
             );
             SpotifyClient spotify = new(TokenResponse.AccessToken);
