@@ -14,6 +14,6 @@ namespace SpotifyClientCli
         {
             string str = string.Join("\n ", list);
             return str;
-        } 
+        }
     }
 }
