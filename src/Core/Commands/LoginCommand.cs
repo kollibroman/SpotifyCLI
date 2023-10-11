@@ -1,12 +1,23 @@
+using System.Threading.Tasks;
+using Core.Interfaces;
 using Spectre.Console.Cli;
 
 namespace Core.Commands
 {
-    public class LoginCommand : Command
+    public class LoginCommand : AsyncCommand
     {
-        public override int Execute(CommandContext context)
+        private readonly ILoginService _service;
+
+        public LoginCommand(ILoginService service)
         {
-            
+            _service = service;
+        }
+
+        public override async Task<int> ExecuteAsync(CommandContext commandContext)
+        {
+            await _service.Login();
+
+            return 1;
         }
     }
 }

@@ -1,8 +1,7 @@
-namespace Database.Entities
+namespace Core.Data
 {
-    public class AppDetails
+    public class ClientData
     {
-        public int Id { get; set; }
         public string ClientId { get; set; } 
         public string ClientSecret { get; set; } 
     }

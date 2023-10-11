@@ -1,37 +1,25 @@
-using System;
 using Core.Interfaces;
-using Database;
-using Database.Entities;
+using Core.Data;
 using Spectre.Console;
 
 namespace Core.Services
 {
     public class CredAdder : ICredAdder
     {
-        private readonly SpotDbContext _db;
-
-        public CredAdder(SpotDbContext dbContext)
+        private readonly AppConfig _config;
+        public CredAdder(AppConfig config)
         {
-            _db = dbContext;
+            _config = config;
         }
 
-        public void AddCredentials(string ClientId, string ClientSecret)
+        public async Task AddCredentials(string ClientId, string ClientSecret)
         {
-            var AppDetails = new AppDetails()
-            {
-                ClientId = ClientId,
-                ClientSecret = ClientSecret 
-            };
+            _config.Data.ClientId = ClientId;
+            _config.Data.ClientSecret = ClientSecret;
 
-            _db.AppDetails.Add(AppDetails);
-            _db.SaveChanges();
-
-            _db.SaveChangesFailed += SaveFailed!;
-        }
-
-        static void SaveFailed(object sender, EventArgs eventArgs)
-        {
-            AnsiConsole.WriteLine("Saving changes failed");
+            await _config.SaveAsync();
+            
+            AnsiConsole.WriteLine("Data succesfully added");
         }
     }
 }
