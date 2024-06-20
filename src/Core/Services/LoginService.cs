@@ -1,4 +1,4 @@
-using System.Runtime.Versioning;
+using Core.Helpers;
 using SpotifyAPI.Web.Auth;
 using Core.Interfaces;
 using SpotifyAPI.Web;
@@ -8,15 +8,13 @@ namespace Core.Services
 {
     public class LoginService : ILoginService
     {
-        private static EmbedIOAuthServer _server;
-        private readonly SemaphoreSlim signal = new(0,1);
+        private static EmbedIOAuthServer? _server;
+        private readonly SemaphoreSlim _signal = new(0,1);
         private readonly DataHandler _handler;
-        private readonly AppConfig _config;
 
-        public LoginService(DataHandler handler, AppConfig config)
+        public LoginService(DataHandler handler)
         {
            _handler = handler;
-           _config = config;
         }
 
         public async Task Login()
@@ -28,7 +26,7 @@ namespace Core.Services
             _server.ErrorReceived += Error;
 
             var request = new LoginRequest(_server.BaseUri,
-    _handler.data.ClientId ,LoginRequest.ResponseType.Code)
+                _handler.ClientData.ClientId ,LoginRequest.ResponseType.Code)
             {
                 Scope = new List<string> {  Scopes.AppRemoteControl,
                     Scopes.PlaylistModifyPrivate,
@@ -52,43 +50,42 @@ namespace Core.Services
             };
             BrowserUtil.Open(request.ToUri());
 
-            await signal.WaitAsync();
+            await _signal.WaitAsync();
         }
 
         private async Task OnAuthCodeReceived(object sender, AuthorizationCodeResponse response)
         {
-            await _server.Stop();
+            await _server!.Stop();
 
             var config = SpotifyClientConfig.CreateDefault();
 
-            var TokenResponse = await new OAuthClient(config).RequestToken(
+            var tokenResponse = await new OAuthClient(config).RequestToken(
                 new AuthorizationCodeTokenRequest(
-              _handler.data.ClientId, _handler.data.ClientSecret, response.Code, new Uri("http://localhost:5000/callback")));
+              _handler.ClientData.ClientId, _handler.ClientData.ClientSecret, response.Code, new Uri("http://localhost:5000/callback")));
 
-            var spotify = new SpotifyClient(TokenResponse.AccessToken);
+            var spotify = new SpotifyClient(tokenResponse.AccessToken);
 
-            _config.Token.AccessToken = TokenResponse.AccessToken;
-            _config.Token.RefreshToken = TokenResponse.RefreshToken;
-            _config.Token.TokenType = TokenResponse.TokenType;
-            _config.Token.CreatedAt = TokenResponse.CreatedAt;
-            _config.Token.ExpiresIn = TokenResponse.ExpiresIn;
+            _handler.Token.AccessToken = tokenResponse.AccessToken;
+            _handler.Token.RefreshToken = tokenResponse.RefreshToken;
+            _handler.Token.TokenType = tokenResponse.TokenType;
+            _handler.Token.CreatedAt = tokenResponse.CreatedAt;
+            _handler.Token.ExpiresIn = tokenResponse.ExpiresIn;
             
             var acc = await spotify.UserProfile.Current();  
             AnsiConsole.WriteLine($"Hello {acc.DisplayName}");
 
-            _config.Account.DisplayName = acc.DisplayName;
-            _config.Account.Uri = acc.Uri;
-            _config.Account.UserId = acc.Id;
-            await _config.SaveAsync();
-            signal.Release();    
+            _handler.Account.DisplayName = acc.DisplayName;
+            _handler.Account.Uri = acc.Uri;
+            _handler.Account.UserId = acc.Id;
+            _signal.Release();    
         }
 
-        private async Task Error(object sender, string error, string state)
+        private async Task Error(object sender, string error, string? state)
         {
             Console.WriteLine($"Aborting authorization, error received: {error}");
-            await _server.Stop();
+            await _server!.Stop();
 
-            signal.Release();
+            _signal.Release();
         }
 
         public Task Logout()

@@ -1,29 +1,33 @@
 using System;
+using Core.Helpers;
 using Core.Interfaces;
+using Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Core.Services
 {
     public class StartupService
     {
-        public async Task<AppConfig> Load()
-        {
-            AppConfig config = new();
-
-            Directory.CreateDirectory(Path.Combine(
-            Environment.GetFolderPath(
-                Environment.SpecialFolder.ApplicationData,
-                Environment.SpecialFolderOption.Create),"SpotifyCli"));            
-
-            if (!File.Exists(config.AppConfigFilePath))
-            {
-               await config.SaveAsync();
-               return config;
-            }
-       
-            var configContent = await File.ReadAllTextAsync(config.AppConfigFilePath);
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly DataHandler _dataHandler;
         
-            return JsonConvert.DeserializeObject<AppConfig>(configContent)!;
+        public StartupService(IServiceScopeFactory serviceScopeFactory, DataHandler dataHandler)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+            _dataHandler = dataHandler;
+        }
+        
+        public async Task LoadDatabaseDataASync()
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<SpotDbContext>();
+            
+            _dataHandler.ClientData = await dbContext.ClientData.SingleOrDefaultAsync(x => x.Id == 1) ?? default!;
+            _dataHandler.Device = await dbContext.Device.SingleOrDefaultAsync(x => x.Id == 1) ?? default!;
+            _dataHandler.Token = await dbContext.Token.SingleOrDefaultAsync(x => x.Id == 1) ?? default!;
+            _dataHandler.Account = await dbContext.UsrAccount.SingleOrDefaultAsync(x => x.Id == 1) ?? default!;
         }
     }
 }

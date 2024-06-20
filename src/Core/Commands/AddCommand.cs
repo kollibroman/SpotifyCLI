@@ -9,7 +9,6 @@ namespace Core.Commands
     public class AddCommand : AsyncCommand<AddCommandSettings>
     {
        private readonly ICredAdder _adder;
-
        public AddCommand(ICredAdder adder)
        {
             _adder = adder;

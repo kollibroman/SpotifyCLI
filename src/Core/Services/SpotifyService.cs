@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Core.Exception;
+using Core.Helpers;
 using Core.Interfaces;
 using SpotifyAPI.Web;
 
@@ -10,8 +11,8 @@ public class SpotifyService
     private SpotifyClientConfig _config;
     private SpotifyClient? _spotify;
     private OAuthClient _oauth;
-    private readonly IDataHandler _handler;
-    public SpotifyService(IDataHandler handler)
+    private readonly DataHandler _handler;
+    public SpotifyService(DataHandler handler)
     {
         _handler = handler;
 
@@ -34,7 +35,7 @@ public class SpotifyService
         return SpotifyClientConfig
             .CreateDefault()
             .WithAuthenticator(new PKCEAuthenticator(
-                _handler.data.ClientId!, new PKCETokenResponse
+                _handler.ClientData.ClientId!, new PKCETokenResponse
                 {
                     AccessToken = _handler.Token.AccessToken,
                     CreatedAt = _handler.Token.CreatedAt,

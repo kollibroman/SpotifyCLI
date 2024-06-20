@@ -1,23 +1,20 @@
 using Core.Interfaces;
-using Core.Data;
+using Database;
 using Spectre.Console;
 
 namespace Core.Services
 {
     public class CredAdder : ICredAdder
     {
-        private readonly AppConfig _config;
-        public CredAdder(AppConfig config)
+        private readonly SpotDbContext _dbContext;
+        public CredAdder(SpotDbContext dbContext)
         {
-            _config = config;
+            _dbContext = dbContext;
         }
 
         public async Task AddCredentials(string ClientId, string ClientSecret)
         {
-            _config.Data.ClientId = ClientId;
-            _config.Data.ClientSecret = ClientSecret;
-
-            await _config.SaveAsync();
+            
             
             AnsiConsole.WriteLine("Data succesfully added");
         }
