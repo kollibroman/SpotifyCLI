@@ -1,5 +1,5 @@
+using Core.Database;
 using Core.Interfaces;
-using Database;
 using Spectre.Console;
 
 namespace Core.Services

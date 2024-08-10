@@ -1,10 +1,14 @@
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database;
+namespace Core.Database;
 
 public class SpotDbContext : DbContext
 {
+    public SpotDbContext()
+    {
+    }
+    
     public SpotDbContext(DbContextOptions<SpotDbContext> options) : base(options) 
     {
     }
@@ -18,5 +22,10 @@ public class SpotDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SpotDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite("Data Source=spot.db");
     }
 }

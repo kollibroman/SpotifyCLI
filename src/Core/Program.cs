@@ -2,10 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using Core.Commands;
+using Core.Database;
 using Core.Helpers;
 using Core.Interfaces;
 using Core.Services;
-using Database;
 using Spectre.Console;
 
 //using Core.Tests;
@@ -17,7 +17,7 @@ public class Program
     public static async Task Main(string[] args)
     {
         var services = new ServiceCollection()
-            .AddSqlite<SpotDbContext>("Data Source=spot.db;")
+            .AddDbContext<SpotDbContext>()
             .AddSingleton<DataHandler>()
             .AddScoped<ICredAdder, CredAdder>()
             .AddScoped<ILoginService, LoginService>();
@@ -34,6 +34,11 @@ public class Program
             configuration.AddCommand<LoginCommand>("login")
                 .WithDescription("logs you into your accoount");
         });
+        
+        var serviceProvider = services.BuildServiceProvider();
+        var startupService = serviceProvider.GetRequiredService<StartupService>();
+        
+        await startupService.LoadDatabaseDataASync();
 
         try
         {

@@ -1,10 +1,7 @@
-using System;
+using Core.Database;
 using Core.Helpers;
-using Core.Interfaces;
-using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Core.Services
 {
