@@ -1,4 +1,5 @@
-using Database.Models;
+using Core.Database.Models;
+using Core.Database.Models;
 
 namespace Core.Helpers;
 

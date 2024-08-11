@@ -1,3 +1,5 @@
+using Core.Database;
+using Core.Database.Models;
 using Core.Helpers;
 using SpotifyAPI.Web.Auth;
 using Core.Interfaces;
@@ -11,10 +13,12 @@ namespace Core.Services
         private static EmbedIOAuthServer? _server;
         private readonly SemaphoreSlim _signal = new(0,1);
         private readonly DataHandler _handler;
+        private readonly SpotDbContext _dbContext;
 
-        public LoginService(DataHandler handler)
+        public LoginService(DataHandler handler, SpotDbContext dbContext)
         {
            _handler = handler;
+           _dbContext = dbContext;
         }
 
         public async Task Login()
@@ -77,6 +81,9 @@ namespace Core.Services
             _handler.Account.DisplayName = acc.DisplayName;
             _handler.Account.Uri = acc.Uri;
             _handler.Account.UserId = acc.Id;
+
+            await SaveDataAsync(_handler.ClientData, _handler.Device, _handler.Token, _handler.Account);
+            
             _signal.Release();    
         }
 
@@ -91,6 +98,16 @@ namespace Core.Services
         public Task Logout()
         {
             throw new  NotImplementedException();
+        }
+        
+        private async Task SaveDataAsync(ClientData clientData, Database.Models.Device device, Token token, UsrAccount account)
+        {
+            _dbContext.ClientData.Update(clientData);
+            _dbContext.Device.Update(device);
+            _dbContext.Token.Update(token);
+            _dbContext.UsrAccount.Update(account);
+            
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
