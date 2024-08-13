@@ -14,15 +14,19 @@ namespace Core.Services
         private readonly SemaphoreSlim _signal = new(0,1);
         private readonly DataHandler _handler;
         private readonly SpotDbContext _dbContext;
+        private readonly IStartupService _startupService;
 
-        public LoginService(DataHandler handler, SpotDbContext dbContext)
+        public LoginService(DataHandler handler, SpotDbContext dbContext, IStartupService startupService)
         {
-           _handler = handler;
-           _dbContext = dbContext;
+            _handler = handler;
+            _dbContext = dbContext;
+            _startupService = startupService;
         }
 
         public async Task Login()
         {
+            await _startupService.LoadDatabaseDataASync();
+            
             _server = new EmbedIOAuthServer(new Uri("http://localhost:5000/callback"), 5000);
             await _server.Start();
 
@@ -30,7 +34,7 @@ namespace Core.Services
             _server.ErrorReceived += Error;
 
             var request = new LoginRequest(_server.BaseUri,
-                _handler.ClientData.ClientId ,LoginRequest.ResponseType.Code)
+                _handler.ClientData.ClientId! ,LoginRequest.ResponseType.Code)
             {
                 Scope = new List<string> {  Scopes.AppRemoteControl,
                     Scopes.PlaylistModifyPrivate,
@@ -65,24 +69,30 @@ namespace Core.Services
 
             var tokenResponse = await new OAuthClient(config).RequestToken(
                 new AuthorizationCodeTokenRequest(
-              _handler.ClientData.ClientId, _handler.ClientData.ClientSecret, response.Code, new Uri("http://localhost:5000/callback")));
-
+              _handler.ClientData.ClientId!, _handler.ClientData.ClientSecret!, response.Code, new Uri("http://localhost:5000/callback")));
+            
             var spotify = new SpotifyClient(tokenResponse.AccessToken);
-
-            _handler.Token.AccessToken = tokenResponse.AccessToken;
-            _handler.Token.RefreshToken = tokenResponse.RefreshToken;
-            _handler.Token.TokenType = tokenResponse.TokenType;
-            _handler.Token.CreatedAt = tokenResponse.CreatedAt;
-            _handler.Token.ExpiresIn = tokenResponse.ExpiresIn;
             
             var acc = await spotify.UserProfile.Current();  
             AnsiConsole.WriteLine($"Hello {acc.DisplayName}");
+            
+            var account = new UsrAccount
+            {
+                DisplayName = acc.DisplayName,
+                Uri = acc.Uri,
+                UserId = acc.Id
+            };
 
-            _handler.Account.DisplayName = acc.DisplayName;
-            _handler.Account.Uri = acc.Uri;
-            _handler.Account.UserId = acc.Id;
-
-            await SaveDataAsync(_handler.ClientData, _handler.Device, _handler.Token, _handler.Account);
+            var token = new Token
+            {
+                AccessToken = tokenResponse.AccessToken,
+                RefreshToken = tokenResponse.RefreshToken,
+                ExpiresIn = tokenResponse.ExpiresIn,
+                TokenType = tokenResponse.TokenType,
+                CreatedAt = DateTime.Now
+            };
+            
+            await SaveDataAsync(token, account);
             
             _signal.Release();    
         }
@@ -100,10 +110,8 @@ namespace Core.Services
             throw new  NotImplementedException();
         }
         
-        private async Task SaveDataAsync(ClientData clientData, Database.Models.Device device, Token token, UsrAccount account)
+        private async Task SaveDataAsync(Token token, UsrAccount account)
         {
-            _dbContext.ClientData.Update(clientData);
-            _dbContext.Device.Update(device);
             _dbContext.Token.Update(token);
             _dbContext.UsrAccount.Update(account);
             

@@ -6,7 +6,7 @@ namespace Core.Database.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public required string DeviceId { get; set; }
-        public required string Name { get; set; }
+        public string? DeviceId { get; set; }
+        public string? Name { get; set; }
     }
 }

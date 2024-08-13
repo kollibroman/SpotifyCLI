@@ -1,11 +1,12 @@
 using Core.Database;
 using Core.Helpers;
+using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Services
 {
-    public class StartupService
+    public class StartupService : IStartupService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly DataHandler _dataHandler;

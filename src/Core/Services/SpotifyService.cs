@@ -8,9 +8,6 @@ namespace Core.Services;
 
 public class SpotifyService
 {
-    private SpotifyClientConfig _config;
-    private SpotifyClient? _spotify;
-    private OAuthClient _oauth;
     private readonly DataHandler _handler;
     public SpotifyService(DataHandler handler)
     {
@@ -18,16 +15,16 @@ public class SpotifyService
 
         if (!string.IsNullOrEmpty(_handler.Token.RefreshToken))
         {
-            _config = CreateForUser();
-            _spotify = new SpotifyClient(_config);
+            Config = CreateForUser();
+            Spotify = new SpotifyClient(Config);
         }
 
         else
         {
-            _config = SpotifyClientConfig.CreateDefault();
+            Config = SpotifyClientConfig.CreateDefault();
         }
 
-        _oauth = new OAuthClient(_config);
+        OAuth = new OAuthClient(Config);
     }
 
     public SpotifyClientConfig CreateForUser()
@@ -37,10 +34,10 @@ public class SpotifyService
             .WithAuthenticator(new PKCEAuthenticator(
                 _handler.ClientData.ClientId!, new PKCETokenResponse
                 {
-                    AccessToken = _handler.Token.AccessToken,
+                    AccessToken = _handler.Token.AccessToken!,
                     CreatedAt = _handler.Token.CreatedAt,
                     ExpiresIn = _handler.Token.ExpiresIn,
-                    TokenType = _handler.Token.TokenType
+                    TokenType = _handler.Token.TokenType!
                 }
             ))
             .WithRetryHandler(new SimpleRetryHandler());
@@ -49,7 +46,7 @@ public class SpotifyService
 
     public bool UserLoggedIn([NotNull]out SpotifyClient? spotify)
     {
-        if (Spotify == null || !(Config.Authenticator is PKCEAuthenticator))
+        if (Spotify == null || Config.Authenticator is not PKCEAuthenticator)
         {
             spotify = null;
             throw new NotLoggedInException("Ur not logged in");
@@ -59,7 +56,7 @@ public class SpotifyService
         return true;
     }
 
-    public SpotifyClientConfig Config { get => _config; }
-    public SpotifyClient? Spotify { get => _spotify; }
-    public OAuthClient OAuth { get => _oauth; }
+    public SpotifyClientConfig Config { get; }
+    public SpotifyClient? Spotify { get; }
+    public OAuthClient OAuth { get; }
 }

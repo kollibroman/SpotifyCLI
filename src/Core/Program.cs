@@ -19,6 +19,7 @@ public class Program
         var services = new ServiceCollection()
             .AddDbContext<SpotDbContext>()
             .AddSingleton<DataHandler>()
+            .AddScoped<IStartupService, StartupService>()
             .AddScoped<ICredAdder, CredAdder>()
             .AddScoped<ILoginService, LoginService>();
 
@@ -34,11 +35,6 @@ public class Program
             configuration.AddCommand<LoginCommand>("login")
                 .WithDescription("logs you into your accoount");
         });
-        
-        var serviceProvider = services.BuildServiceProvider();
-        var startupService = serviceProvider.GetRequiredService<StartupService>();
-        
-        await startupService.LoadDatabaseDataASync();
 
         try
         {

@@ -6,7 +6,7 @@ namespace Core.Database.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public required string ClientId { get; set; } 
-        public required string ClientSecret { get; set; } 
+        public string? ClientId { get; set; } 
+        public string? ClientSecret { get; set; } 
     }
 }
