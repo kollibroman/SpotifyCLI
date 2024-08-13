@@ -3,6 +3,7 @@ using Core.Database.Models;
 using Core.Helpers;
 using SpotifyAPI.Web.Auth;
 using Core.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using SpotifyAPI.Web;
 using Spectre.Console;
 
@@ -105,9 +106,16 @@ namespace Core.Services
             _signal.Release();
         }
 
-        public Task Logout()
+        public async Task Logout()
         {
-            throw new  NotImplementedException();
+            var token = await _dbContext.Token.SingleOrDefaultAsync(x => x.Id == 1);
+            var account = await _dbContext.UsrAccount.SingleOrDefaultAsync(x => x.Id == 1);
+
+            if (token is not null && account is not null)
+            {
+                _dbContext.Token.Remove(token);
+                _dbContext.UsrAccount.Remove(account);
+            }
         }
         
         private async Task SaveDataAsync(Token token, UsrAccount account)
